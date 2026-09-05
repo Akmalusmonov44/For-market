@@ -1,0 +1,194 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum StoreRole {
+  EGASI // Owner / Administrator
+  MENEJER // Manager
+  SOTUVCHI // Cashier / Seller
+}
+
+enum PaymentType {
+  NAQD // Cash
+  KARTA // Card
+  BOSHQA // Other
+}
+
+enum InventoryTxType {
+  KIRIM // stock in (manual restock)
+  CHIQIM // stock out (manual)
+  SOTUV // sold
+  TUZATISH // correction
+}
+
+model User {
+  id            String   @id @default(cuid())
+  ism           String
+  familiya      String
+  email         String?  @unique
+  telefon       String?  @unique
+  passwordHash  String
+  isSuperAdmin  Boolean  @default(false)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  memberships StoreMember[]
+
+  @@index([email])
+  @@index([telefon])
+}
+
+model Store {
+  id          String   @id @default(cuid())
+  nomi        String
+  turi        String // store type: Oziq-ovqat, Kiyim-kechak, ... or custom
+  telefon     String?
+  manzil      String?
+  logoUrl     String?
+  valyuta     String   @default("UZS")
+  chekSarlavha String? // receipt header text
+  chekFooter  String? // receipt footer text
+  ownerId     String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  members      StoreMember[]
+  categories   Category[]
+  products     Product[]
+  sales        Sale[]
+  expenses     Expense[]
+  inventoryTxs InventoryTransaction[]
+
+  @@index([ownerId])
+}
+
+model StoreMember {
+  id        String    @id @default(cuid())
+  userId    String
+  storeId   String
+  role      StoreRole
+  createdAt DateTime  @default(now())
+
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  store Store @relation(fields: [storeId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, storeId])
+  @@index([storeId])
+  @@index([userId])
+}
+
+model Category {
+  id        String   @id @default(cuid())
+  storeId   String
+  nomi      String
+  createdAt DateTime @default(now())
+
+  store    Store     @relation(fields: [storeId], references: [id], onDelete: Cascade)
+  products Product[]
+
+  @@unique([storeId, nomi])
+  @@index([storeId])
+}
+
+model Product {
+  id             String   @id @default(cuid())
+  storeId        String
+  categoryId     String?
+  nomi           String
+  shtrixKod      String?
+  xaridNarxi     Decimal  @db.Decimal(14, 2)
+  sotuvNarxi     Decimal  @db.Decimal(14, 2)
+  miqdori        Int      @default(0)
+  minimalQoldiq  Int      @default(0)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  store        Store                  @relation(fields: [storeId], references: [id], onDelete: Cascade)
+  category     Category?              @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  saleItems    SaleItem[]
+  inventoryTxs InventoryTransaction[]
+
+  @@index([storeId])
+  @@index([storeId, shtrixKod])
+  @@index([categoryId])
+}
+
+model Sale {
+  id           String   @id @default(cuid())
+  storeId      String
+  userId       String // who made the sale
+  jamiSumma    Decimal  @db.Decimal(14, 2)
+  tannarx      Decimal  @db.Decimal(14, 2) // cost of goods sold for this sale
+  foyda        Decimal  @db.Decimal(14, 2) // gross profit for this sale
+  createdAt    DateTime @default(now())
+
+  store    Store      @relation(fields: [storeId], references: [id], onDelete: Cascade)
+  items    SaleItem[]
+  payments Payment[]
+
+  @@index([storeId, createdAt])
+}
+
+model SaleItem {
+  id         String  @id @default(cuid())
+  saleId     String
+  productId  String
+  nomi       String // snapshot of product name at time of sale
+  narxi      Decimal @db.Decimal(14, 2) // unit sale price at time of sale
+  tannarx    Decimal @db.Decimal(14, 2) // unit cost price at time of sale
+  miqdori    Int
+
+  sale    Sale    @relation(fields: [saleId], references: [id], onDelete: Cascade)
+  product Product @relation(fields: [productId], references: [id])
+
+  @@index([saleId])
+  @@index([productId])
+}
+
+model Payment {
+  id        String      @id @default(cuid())
+  saleId    String
+  turi      PaymentType
+  summa     Decimal     @db.Decimal(14, 2)
+  createdAt DateTime    @default(now())
+
+  sale Sale @relation(fields: [saleId], references: [id], onDelete: Cascade)
+
+  @@index([saleId])
+}
+
+model Expense {
+  id        String   @id @default(cuid())
+  storeId   String
+  nomi      String
+  summa     Decimal  @db.Decimal(14, 2)
+  kategoriya String
+  sana      DateTime
+  izoh      String?
+  createdAt DateTime @default(now())
+
+  store Store @relation(fields: [storeId], references: [id], onDelete: Cascade)
+
+  @@index([storeId, sana])
+}
+
+model InventoryTransaction {
+  id        String          @id @default(cuid())
+  storeId   String
+  productId String
+  turi      InventoryTxType
+  miqdor    Int // positive = added, negative = removed
+  izoh      String?
+  createdAt DateTime        @default(now())
+
+  store   Store   @relation(fields: [storeId], references: [id], onDelete: Cascade)
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@index([storeId, createdAt])
+  @@index([productId])
+}
