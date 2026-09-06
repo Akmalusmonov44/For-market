@@ -87,6 +87,7 @@ export default function DashboardHomePage() {
     let bekor = false;
 
     async function yuklash() {
+          if (!tanlanganDokon) return;
       setYuklanmoqda(true);
       try {
         const bugun = new Date().toISOString().slice(0, 10);
