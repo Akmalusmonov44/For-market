@@ -80,9 +80,17 @@ export const expenseSchema = z.object({
   izoh: z.string().optional().or(z.literal("")),
 });
 
-export const employeeInviteSchema = z.object({
+export const employeeCreateSchema = z.object({
+  ism: z.string().min(2, "Ism kamida 2 ta belgidan iborat bo'lishi kerak.").optional().or(z.literal("")),
+  familiya: z.string().min(2, "Familiya kamida 2 ta belgidan iborat bo'lishi kerak.").optional().or(z.literal("")),
   identifikator: z.string().min(3, "Email yoki telefon raqamini kiriting."),
+  parol: z.string().min(6, "Parol kamida 6 ta belgidan iborat bo'lishi kerak.").optional().or(z.literal("")),
   role: z.enum(["EGASI", "MENEJER", "SOTUVCHI"]),
+});
+
+export const employeeUpdateSchema = z.object({
+  role: z.enum(["EGASI", "MENEJER", "SOTUVCHI"]).optional(),
+  yangiParol: z.string().min(6, "Parol kamida 6 ta belgidan iborat bo'lishi kerak.").optional().or(z.literal("")),
 });
 
 export const forgotPasswordSchema = z.object({

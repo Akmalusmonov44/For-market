@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import { apiFetch } from "@/lib/api-client";
 
 interface StoreRow {
@@ -49,6 +50,7 @@ export default function AdminDokonlarPage() {
         value={qidiruv}
         onChange={(e) => setQidiruv(e.target.value)}
       />
+      <p className="text-xs text-slate-400">Batafsil ko'rish uchun do'kon nomiga bosing.</p>
 
       <div className="card overflow-x-auto">
         {yuklanmoqda ? (
@@ -69,8 +71,15 @@ export default function AdminDokonlarPage() {
             </thead>
             <tbody>
               {filtrlangan.map((d) => (
-                <tr key={d.id} className="border-b border-slate-50 dark:border-slate-800/60">
-                  <td className="px-4 py-3 font-medium">{d.nomi}</td>
+                <tr
+                  key={d.id}
+                  className="border-b border-slate-50 hover:bg-slate-50 dark:border-slate-800/60 dark:hover:bg-slate-800/40"
+                >
+                  <td className="px-4 py-3">
+                    <Link href={`/admin/dokonlar/${d.id}`} className="font-medium text-brand-700 hover:underline">
+                      {d.nomi}
+                    </Link>
+                  </td>
                   <td className="px-4 py-3 text-slate-500">{d.turi}</td>
                   <td className="px-4 py-3 text-slate-500">
                     {d.egasi ? `${d.egasi.ism} ${d.egasi.familiya}` : "—"}

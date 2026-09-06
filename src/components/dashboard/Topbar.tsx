@@ -5,10 +5,12 @@ import Link from "next/link";
 import { useStore } from "./StoreContext";
 import StoreSelector from "./StoreSelector";
 import { apiFetch } from "@/lib/api-client";
+import { useLanguage } from "@/components/i18n/LanguageContext";
 
 export default function Topbar({ onMenyu }: { onMenyu: () => void }) {
   const { foydalanuvchi } = useStore();
   const router = useRouter();
+  const { t } = useLanguage();
 
   async function chiqish() {
     await apiFetch("/api/auth/logout", { method: "POST" });
@@ -21,17 +23,17 @@ export default function Topbar({ onMenyu }: { onMenyu: () => void }) {
         ☰
       </button>
       <div className="hidden text-sm text-slate-500 md:block">
-        {foydalanuvchi ? `Xush kelibsiz, ${foydalanuvchi.ism}` : ""}
+        {foydalanuvchi ? `${t("topbar.xushKelibsiz")}, ${foydalanuvchi.ism}` : ""}
       </div>
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-3 pr-20 md:pr-24">
         {foydalanuvchi?.isSuperAdmin && (
           <Link href="/admin" className="btn-secondary !px-3 !py-2 text-sm">
-            Platforma admin
+            {t("topbar.platformaAdmin")}
           </Link>
         )}
         <StoreSelector />
         <button onClick={chiqish} className="btn-secondary !px-3 !py-2 text-sm">
-          Chiqish
+          {t("topbar.chiqish")}
         </button>
       </div>
     </header>

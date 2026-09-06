@@ -12,6 +12,7 @@ interface ReportData {
   umumiyXarajat: number;
   sofFoyda: number;
   sotuvlarSoni: number;
+  tolovTurlariBoyicha: { NAQD: number; KARTA: number; BOSHQA: number };
   kunlikSavdo: { sana: string; savdo: number; foyda: number }[];
   engKopSotilgan: { nomi: string; miqdor: number; tushum: number; foyda: number }[];
   engKopFoydaKeltirgan: { nomi: string; miqdor: number; tushum: number; foyda: number }[];
@@ -77,24 +78,67 @@ export default function HisobotlarPage() {
         <>
           <div className="grid grid-cols-2 gap-4 lg:grid-cols-3">
             <div className="card p-5">
-              <div className="text-sm text-slate-500">Umumiy tushum</div>
-              <div className="mt-1 text-xl font-bold">{pul(data.umumiyTushum)}</div>
+              <div className="mb-2 flex items-center gap-2.5">
+                <div className="icon-badge bg-blue-50 text-blue-600 dark:bg-blue-950 dark:text-blue-400">
+                  <i className="ti ti-cash" aria-hidden="true" />
+                </div>
+                <div className="text-sm text-slate-500">Umumiy tushum</div>
+              </div>
+              <div className="text-xl font-semibold">{pul(data.umumiyTushum)}</div>
             </div>
             <div className="card p-5">
-              <div className="text-sm text-slate-500">Yalpi foyda</div>
-              <div className="mt-1 text-xl font-bold text-emerald-600">{pul(data.yalpiFoyda)}</div>
+              <div className="mb-2 flex items-center gap-2.5">
+                <div className="icon-badge bg-emerald-50 text-emerald-600 dark:bg-emerald-950 dark:text-emerald-400">
+                  <i className="ti ti-trending-up" aria-hidden="true" />
+                </div>
+                <div className="text-sm text-slate-500">Yalpi foyda</div>
+              </div>
+              <div className="text-xl font-semibold text-emerald-600">{pul(data.yalpiFoyda)}</div>
             </div>
             <div className="card p-5">
-              <div className="text-sm text-slate-500">Xarajatlar</div>
-              <div className="mt-1 text-xl font-bold text-red-600">{pul(data.umumiyXarajat)}</div>
+              <div className="mb-2 flex items-center gap-2.5">
+                <div className="icon-badge bg-red-50 text-red-600 dark:bg-red-950 dark:text-red-400">
+                  <i className="ti ti-receipt-2" aria-hidden="true" />
+                </div>
+                <div className="text-sm text-slate-500">Xarajatlar</div>
+              </div>
+              <div className="text-xl font-semibold text-red-600">{pul(data.umumiyXarajat)}</div>
             </div>
             <div className="card p-5">
-              <div className="text-sm text-slate-500">Sof foyda</div>
-              <div className="mt-1 text-xl font-bold text-brand-700">{pul(data.sofFoyda)}</div>
+              <div className="mb-2 flex items-center gap-2.5">
+                <div className="icon-badge bg-brand-50 text-brand-700 dark:bg-brand-950 dark:text-brand-400">
+                  <i className="ti ti-wallet" aria-hidden="true" />
+                </div>
+                <div className="text-sm text-slate-500">Sof foyda</div>
+              </div>
+              <div className="text-xl font-semibold text-brand-700">{pul(data.sofFoyda)}</div>
             </div>
             <div className="card p-5">
-              <div className="text-sm text-slate-500">Sotuvlar soni</div>
-              <div className="mt-1 text-xl font-bold">{data.sotuvlarSoni}</div>
+              <div className="mb-2 flex items-center gap-2.5">
+                <div className="icon-badge bg-purple-50 text-purple-600 dark:bg-purple-950 dark:text-purple-400">
+                  <i className="ti ti-shopping-cart" aria-hidden="true" />
+                </div>
+                <div className="text-sm text-slate-500">Sotuvlar soni</div>
+              </div>
+              <div className="text-xl font-semibold">{data.sotuvlarSoni}</div>
+            </div>
+          </div>
+
+          <div className="card p-5">
+            <h2 className="mb-4 font-semibold">To'lov turlari bo'yicha</h2>
+            <div className="grid grid-cols-3 gap-4">
+              <div className="rounded-xl bg-slate-50 p-4 text-center dark:bg-slate-800/50">
+                <div className="text-sm text-slate-500">💵 Naqd pul</div>
+                <div className="mt-1 font-bold">{pul(data.tolovTurlariBoyicha.NAQD)}</div>
+              </div>
+              <div className="rounded-xl bg-slate-50 p-4 text-center dark:bg-slate-800/50">
+                <div className="text-sm text-slate-500">💳 Bank karta</div>
+                <div className="mt-1 font-bold">{pul(data.tolovTurlariBoyicha.KARTA)}</div>
+              </div>
+              <div className="rounded-xl bg-slate-50 p-4 text-center dark:bg-slate-800/50">
+                <div className="text-sm text-slate-500">🔁 Boshqa</div>
+                <div className="mt-1 font-bold">{pul(data.tolovTurlariBoyicha.BOSHQA)}</div>
+              </div>
             </div>
           </div>
 

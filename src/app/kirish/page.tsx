@@ -1,17 +1,39 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { apiFetch, ApiError } from "@/lib/api-client";
+import { useLanguage } from "@/components/i18n/LanguageContext";
 
 export default function KirishPage() {
+  const { t } = useLanguage();
   const router = useRouter();
   const searchParams = useSearchParams();
   const [identifikator, setIdentifikator] = useState("");
   const [parol, setParol] = useState("");
   const [xato, setXato] = useState<string | null>(null);
   const [yuklanmoqda, setYuklanmoqda] = useState(false);
+
+  // Agar foydalanuvchi allaqachon (haqiqiy, tasdiqlangan) sessiyaga ega
+  // bo'lsa, uni qayta login qildirmasdan to'g'ridan-to'g'ri ichkariga
+  // yuboramiz. Bu tekshiruv haqiqiy /api/auth/me chaqiruvi orqali amalga
+  // oshadi (middleware'dagi kabi shunchaki cookie borligiga qarab emas),
+  // shuning uchun eskirgan/yaroqsiz cookie hech qachon cheksiz
+  // yo'naltirishga olib kelmaydi.
+  useEffect(() => {
+    (async () => {
+      try {
+        const data = await apiFetch<{ foydalanuvchi: { isSuperAdmin?: boolean } | null }>("/api/auth/me");
+        if (data.foydalanuvchi) {
+          router.replace(data.foydalanuvchi.isSuperAdmin ? "/admin" : "/dashboard");
+        }
+      } catch {
+        // e'tiborsiz qoldiramiz — foydalanuvchi shunchaki login formasini ko'radi
+      }
+    })();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -40,14 +62,14 @@ export default function KirishPage() {
   return (
     <main className="flex min-h-screen items-center justify-center bg-slate-50 px-4 py-10">
       <div className="card w-full max-w-md p-8">
-        <h1 className="text-2xl font-bold">Tizimga kirish</h1>
-        <p className="mt-1 text-sm text-slate-500">Hisobingizga kirib do'konlaringizni boshqaring.</p>
+        <h1 className="text-2xl font-bold">{t("auth.kirishSarlavha")}</h1>
+        <p className="mt-1 text-sm text-slate-500">{t("auth.kirishTavsif")}</p>
 
         {xato && <div className="mt-4 rounded-xl bg-red-50 px-4 py-3 text-sm text-red-700">{xato}</div>}
 
         <form onSubmit={onSubmit} className="mt-6 space-y-4">
           <div>
-            <label className="label">Email yoki telefon raqami</label>
+            <label className="label">{t("auth.identifikator")}</label>
             <input
               className="input"
               value={identifikator}
@@ -57,9 +79,9 @@ export default function KirishPage() {
           </div>
           <div>
             <div className="mb-1.5 flex items-center justify-between">
-              <label className="label !mb-0">Parol</label>
+              <label className="label !mb-0">{t("auth.parol")}</label>
               <Link href="/parolni-unutdim" className="text-xs font-medium text-brand-600">
-                Parolni unutdingizmi?
+                {t("auth.parolniUnutdingizmi")}
               </Link>
             </div>
             <input
@@ -71,14 +93,14 @@ export default function KirishPage() {
             />
           </div>
           <button type="submit" className="btn-primary w-full" disabled={yuklanmoqda}>
-            {yuklanmoqda ? "Tekshirilmoqda..." : "Kirish"}
+            {yuklanmoqda ? t("auth.tekshirilmoqda") : t("landing.kirish")}
           </button>
         </form>
 
         <p className="mt-6 text-center text-sm text-slate-500">
-          Hisobingiz yo'qmi?{" "}
+          {t("auth.hisobingizYoqmi")}{" "}
           <Link href="/royxatdan-otish" className="font-medium text-brand-600">
-            Ro'yxatdan o'tish
+            {t("auth.royxatdanOtish")}
           </Link>
         </p>
       </div>

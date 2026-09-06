@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { ToastProvider } from "@/components/ui/Toast";
+import { LanguageProvider } from "@/components/i18n/LanguageContext";
+import LanguageSwitcher from "@/components/i18n/LanguageSwitcher";
 
 export const metadata: Metadata = {
   title: "DoConBoshqar — Do'koningizni oson boshqaring",
@@ -11,7 +13,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="uz">
       <body>
-        <ToastProvider>{children}</ToastProvider>
+        <LanguageProvider>
+          <ToastProvider>
+            <LanguageSwitcher />
+            {children}
+          </ToastProvider>
+        </LanguageProvider>
       </body>
     </html>
   );

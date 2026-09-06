@@ -18,7 +18,13 @@ interface ProductRow {
   store: { id: string; nomi: string };
 }
 
+interface StoreOption {
+  id: string;
+  nomi: string;
+}
+
 const BO_SH_FORM = { nomi: "", shtrixKod: "", xaridNarxi: "", sotuvNarxi: "", miqdori: "", minimalQoldiq: "" };
+const BO_SH_YANGI_FORM = { storeId: "", ...BO_SH_FORM };
 
 function pul(n: number) {
   return new Intl.NumberFormat("uz-UZ").format(Math.round(n)) + " so'm";
@@ -27,6 +33,7 @@ function pul(n: number) {
 export default function AdminMahsulotlarPage() {
   const { ko_rsat } = useToast();
   const [mahsulotlar, setMahsulotlar] = useState<ProductRow[]>([]);
+  const [dokonlar, setDokonlar] = useState<StoreOption[]>([]);
   const [qidiruv, setQidiruv] = useState("");
   const [yuklanmoqda, setYuklanmoqda] = useState(true);
 
@@ -34,6 +41,10 @@ export default function AdminMahsulotlarPage() {
   const [tahrirlanayotgan, setTahrirlanayotgan] = useState<ProductRow | null>(null);
   const [form, setForm] = useState(BO_SH_FORM);
   const [saqlanmoqda, setSaqlanmoqda] = useState(false);
+
+  const [yangiModalOchiq, setYangiModalOchiq] = useState(false);
+  const [yangiForm, setYangiForm] = useState(BO_SH_YANGI_FORM);
+  const [yangiSaqlanmoqda, setYangiSaqlanmoqda] = useState(false);
 
   const [ochirishId, setOchirishId] = useState<string | null>(null);
   const [ochirilmoqda, setOchirilmoqda] = useState(false);
@@ -46,8 +57,14 @@ export default function AdminMahsulotlarPage() {
     setYuklanmoqda(false);
   }
 
+  async function dokonlarniYuklash() {
+    const d = await apiFetch<{ dokonlar: StoreOption[] }>("/api/admin/stores");
+    setDokonlar(d.dokonlar);
+  }
+
   useEffect(() => {
     yuklash();
+    dokonlarniYuklash();
   }, []);
 
   useEffect(() => {
@@ -103,6 +120,26 @@ export default function AdminMahsulotlarPage() {
     }
   }
 
+  function yangiOchish() {
+    setYangiForm(BO_SH_YANGI_FORM);
+    setYangiModalOchiq(true);
+  }
+
+  async function yangiSaqlash(e: React.FormEvent) {
+    e.preventDefault();
+    setYangiSaqlanmoqda(true);
+    try {
+      await apiFetch("/api/admin/products", { method: "POST", body: JSON.stringify(yangiForm) });
+      ko_rsat("Mahsulot qo'shildi.", "success");
+      setYangiModalOchiq(false);
+      yuklash(qidiruv);
+    } catch (err) {
+      ko_rsat(err instanceof ApiError ? err.message : "Xatolik yuz berdi.", "error");
+    } finally {
+      setYangiSaqlanmoqda(false);
+    }
+  }
+
   return (
     <div className="space-y-4">
       <div>
@@ -110,12 +147,17 @@ export default function AdminMahsulotlarPage() {
         <p className="text-sm text-slate-500">Platformadagi barcha do'konlar bo'yicha mahsulotlar.</p>
       </div>
 
-      <input
-        className="input max-w-sm"
-        placeholder="Mahsulot nomi bo'yicha qidirish..."
-        value={qidiruv}
-        onChange={(e) => setQidiruv(e.target.value)}
-      />
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <input
+          className="input max-w-sm"
+          placeholder="Mahsulot nomi bo'yicha qidirish..."
+          value={qidiruv}
+          onChange={(e) => setQidiruv(e.target.value)}
+        />
+        <button className="btn-primary" onClick={yangiOchish}>
+          + Yangi mahsulot qo'shish
+        </button>
+      </div>
 
       <div className="card overflow-x-auto">
         {yuklanmoqda ? (
@@ -207,6 +249,98 @@ export default function AdminMahsulotlarPage() {
         matn="Ushbu mahsulotni o'chirishni tasdiqlaysizmi?"
         yuklanmoqda={ochirilmoqda}
       />
+
+      <Modal ochiq={yangiModalOchiq} onYopish={() => setYangiModalOchiq(false)} sarlavha="Yangi mahsulot qo'shish">
+        <form onSubmit={yangiSaqlash} className="space-y-4">
+          <div>
+            <label className="label">Do'kon</label>
+            <select
+              className="input"
+              value={yangiForm.storeId}
+              onChange={(e) => setYangiForm((f) => ({ ...f, storeId: e.target.value }))}
+              required
+            >
+              <option value="">Tanlang...</option>
+              {dokonlar.map((d) => (
+                <option key={d.id} value={d.id}>
+                  {d.nomi}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div>
+            <label className="label">Mahsulot nomi</label>
+            <input
+              className="input"
+              value={yangiForm.nomi}
+              onChange={(e) => setYangiForm((f) => ({ ...f, nomi: e.target.value }))}
+              required
+            />
+          </div>
+          <div>
+            <label className="label">Shtrix-kod</label>
+            <input
+              className="input"
+              value={yangiForm.shtrixKod}
+              onChange={(e) => setYangiForm((f) => ({ ...f, shtrixKod: e.target.value }))}
+            />
+          </div>
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <label className="label">Xarid narxi</label>
+              <input
+                type="number"
+                min="0"
+                className="input"
+                value={yangiForm.xaridNarxi}
+                onChange={(e) => setYangiForm((f) => ({ ...f, xaridNarxi: e.target.value }))}
+                required
+              />
+            </div>
+            <div>
+              <label className="label">Sotuv narxi</label>
+              <input
+                type="number"
+                min="0"
+                className="input"
+                value={yangiForm.sotuvNarxi}
+                onChange={(e) => setYangiForm((f) => ({ ...f, sotuvNarxi: e.target.value }))}
+                required
+              />
+            </div>
+          </div>
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <label className="label">Miqdori</label>
+              <input
+                type="number"
+                min="0"
+                className="input"
+                value={yangiForm.miqdori}
+                onChange={(e) => setYangiForm((f) => ({ ...f, miqdori: e.target.value }))}
+                required
+              />
+            </div>
+            <div>
+              <label className="label">Minimal qoldiq</label>
+              <input
+                type="number"
+                min="0"
+                className="input"
+                value={yangiForm.minimalQoldiq}
+                onChange={(e) => setYangiForm((f) => ({ ...f, minimalQoldiq: e.target.value }))}
+              />
+            </div>
+          </div>
+          <p className="text-xs text-slate-400">
+            Eslatma: mahsulot kategoriyasiz qo'shiladi — do'kon egasi keyinchalik
+            kategoriya biriktirishi mumkin.
+          </p>
+          <button type="submit" className="btn-primary w-full" disabled={yangiSaqlanmoqda}>
+            {yangiSaqlanmoqda ? "Saqlanmoqda..." : "Qo'shish"}
+          </button>
+        </form>
+      </Modal>
     </div>
   );
 }

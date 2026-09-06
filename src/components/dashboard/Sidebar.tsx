@@ -3,20 +3,22 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import clsx from "clsx";
+import { useLanguage } from "@/components/i18n/LanguageContext";
 
 const MENYU = [
-  { href: "/dashboard", label: "Boshqaruv paneli", icon: "📊" },
-  { href: "/dashboard/kassa", label: "Sotuv / Kassa", icon: "🧾" },
-  { href: "/dashboard/mahsulotlar", label: "Mahsulotlar", icon: "📦" },
-  { href: "/dashboard/ombor", label: "Ombor", icon: "🏬" },
-  { href: "/dashboard/xarajatlar", label: "Xarajatlar", icon: "💸" },
-  { href: "/dashboard/hisobotlar", label: "Hisobotlar", icon: "📈" },
-  { href: "/dashboard/xodimlar", label: "Xodimlar", icon: "👥" },
-  { href: "/dashboard/sozlamalar", label: "Sozlamalar", icon: "⚙️" },
+  { href: "/dashboard", key: "nav.dashboard" as const, icon: "layout-dashboard" },
+  { href: "/dashboard/kassa", key: "nav.kassa" as const, icon: "receipt-2" },
+  { href: "/dashboard/mahsulotlar", key: "nav.mahsulotlar" as const, icon: "box" },
+  { href: "/dashboard/ombor", key: "nav.ombor" as const, icon: "building-warehouse" },
+  { href: "/dashboard/xarajatlar", key: "nav.xarajatlar" as const, icon: "wallet" },
+  { href: "/dashboard/hisobotlar", key: "nav.hisobotlar" as const, icon: "chart-bar" },
+  { href: "/dashboard/xodimlar", key: "nav.xodimlar" as const, icon: "users" },
+  { href: "/dashboard/sozlamalar", key: "nav.sozlamalar" as const, icon: "settings" },
 ];
 
 export default function Sidebar({ ochiq, onYopish }: { ochiq: boolean; onYopish: () => void }) {
   const pathname = usePathname();
+  const { t } = useLanguage();
 
   return (
     <>
@@ -47,8 +49,8 @@ export default function Sidebar({ ochiq, onYopish }: { ochiq: boolean; onYopish:
                     : "text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800",
                 )}
               >
-                <span>{item.icon}</span>
-                {item.label}
+                <i className={`ti ti-${item.icon} text-lg`} aria-hidden="true" />
+                {t(item.key)}
               </Link>
             );
           })}

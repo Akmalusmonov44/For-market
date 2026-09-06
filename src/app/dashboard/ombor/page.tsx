@@ -55,26 +55,47 @@ export default function OmborPage() {
 
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
         <div className="card p-5">
-          <div className="text-sm text-slate-500">Jami mahsulotlar</div>
-          <div className="mt-2 text-2xl font-bold">{data.jamiMahsulot}</div>
+          <div className="mb-3 flex items-center gap-2.5">
+            <div className="icon-badge bg-blue-50 text-blue-600 dark:bg-blue-950 dark:text-blue-400">
+              <i className="ti ti-package" aria-hidden="true" />
+            </div>
+            <div className="text-sm text-slate-500">Jami mahsulotlar</div>
+          </div>
+          <div className="text-2xl font-semibold">{data.jamiMahsulot}</div>
         </div>
         <div className="card p-5">
-          <div className="text-sm text-slate-500">Kam qolgan</div>
-          <div className="mt-2 text-2xl font-bold text-amber-600">{data.kamQolganSoni}</div>
+          <div className="mb-3 flex items-center gap-2.5">
+            <div className="icon-badge bg-amber-50 text-amber-600 dark:bg-amber-950 dark:text-amber-400">
+              <i className="ti ti-alert-triangle" aria-hidden="true" />
+            </div>
+            <div className="text-sm text-slate-500">Kam qolgan</div>
+          </div>
+          <div className="text-2xl font-semibold text-amber-600">{data.kamQolganSoni}</div>
         </div>
         <div className="card p-5">
-          <div className="text-sm text-slate-500">Tugagan</div>
-          <div className="mt-2 text-2xl font-bold text-red-600">{data.tugaganSoni}</div>
+          <div className="mb-3 flex items-center gap-2.5">
+            <div className="icon-badge bg-red-50 text-red-600 dark:bg-red-950 dark:text-red-400">
+              <i className="ti ti-alert-circle" aria-hidden="true" />
+            </div>
+            <div className="text-sm text-slate-500">Tugagan</div>
+          </div>
+          <div className="text-2xl font-semibold text-red-600">{data.tugaganSoni}</div>
         </div>
         <div className="card p-5">
-          <div className="text-sm text-slate-500">Ombor qiymati (tannarxda)</div>
-          <div className="mt-2 text-2xl font-bold">{pul(data.jamiQoldiqQiymati)}</div>
+          <div className="mb-3 flex items-center gap-2.5">
+            <div className="icon-badge bg-purple-50 text-purple-600 dark:bg-purple-950 dark:text-purple-400">
+              <i className="ti ti-coin" aria-hidden="true" />
+            </div>
+            <div className="text-sm text-slate-500">Ombor qiymati (tannarxda)</div>
+          </div>
+          <div className="text-2xl font-semibold">{pul(data.jamiQoldiqQiymati)}</div>
         </div>
       </div>
 
       {data.kamQolganSoni > 0 && (
-        <div className="rounded-xl bg-amber-50 px-4 py-3 text-sm text-amber-800">
-          ⚠️ Diqqat! Ba'zi mahsulotlarning qoldig'i kamayib ketgan.
+        <div className="flex items-center gap-2 rounded-xl bg-amber-50 px-4 py-3 text-sm text-amber-800 dark:bg-amber-950 dark:text-amber-300">
+          <i className="ti ti-alert-triangle text-base" aria-hidden="true" />
+          Diqqat! Ba'zi mahsulotlarning qoldig'i kamayib ketgan.
         </div>
       )}
 

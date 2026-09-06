@@ -4,8 +4,10 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { apiFetch, ApiError } from "@/lib/api-client";
+import { useLanguage } from "@/components/i18n/LanguageContext";
 
 export default function RoyxatdanOtishPage() {
+  const { t } = useLanguage();
   const router = useRouter();
   const [form, setForm] = useState({
     ism: "",
@@ -39,7 +41,7 @@ export default function RoyxatdanOtishPage() {
   return (
     <main className="flex min-h-screen items-center justify-center bg-slate-50 px-4 py-10">
       <div className="card w-full max-w-md p-8">
-        <h1 className="text-2xl font-bold">Ro'yxatdan o'tish</h1>
+        <h1 className="text-2xl font-bold">{t("auth.royxatdanOtish")}</h1>
         <p className="mt-1 text-sm text-slate-500">Yangi hisob yarating va do'koningizni boshqarishni boshlang.</p>
 
         {xato && (
@@ -49,16 +51,16 @@ export default function RoyxatdanOtishPage() {
         <form onSubmit={onSubmit} className="mt-6 space-y-4">
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="label">Ism</label>
+              <label className="label">{t("auth.ism")}</label>
               <input className="input" value={form.ism} onChange={(e) => set("ism", e.target.value)} required />
             </div>
             <div>
-              <label className="label">Familiya</label>
+              <label className="label">{t("auth.familiya")}</label>
               <input className="input" value={form.familiya} onChange={(e) => set("familiya", e.target.value)} required />
             </div>
           </div>
           <div>
-            <label className="label">Email</label>
+            <label className="label">{t("auth.email")}</label>
             <input
               type="email"
               className="input"
@@ -68,7 +70,7 @@ export default function RoyxatdanOtishPage() {
             />
           </div>
           <div>
-            <label className="label">Telefon raqami</label>
+            <label className="label">{t("auth.telefon")}</label>
             <input
               className="input"
               value={form.telefon}
@@ -77,7 +79,7 @@ export default function RoyxatdanOtishPage() {
             />
           </div>
           <div>
-            <label className="label">Parol</label>
+            <label className="label">{t("auth.parol")}</label>
             <input
               type="password"
               className="input"
@@ -87,7 +89,7 @@ export default function RoyxatdanOtishPage() {
             />
           </div>
           <div>
-            <label className="label">Parolni tasdiqlang</label>
+            <label className="label">{t("auth.parolTasdiqlang")}</label>
             <input
               type="password"
               className="input"
@@ -97,14 +99,14 @@ export default function RoyxatdanOtishPage() {
             />
           </div>
           <button type="submit" className="btn-primary w-full" disabled={yuklanmoqda}>
-            {yuklanmoqda ? "Yuborilmoqda..." : "Ro'yxatdan o'tish"}
+            {yuklanmoqda ? t("auth.yuborilmoqda") : t("auth.royxatdanOtish")}
           </button>
         </form>
 
         <p className="mt-6 text-center text-sm text-slate-500">
-          Hisobingiz bormi?{" "}
+          {t("auth.hisobingizBormi")}{" "}
           <Link href="/kirish" className="font-medium text-brand-600">
-            Kirish
+            {t("landing.kirish")}
           </Link>
         </p>
       </div>

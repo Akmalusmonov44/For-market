@@ -1,3 +1,5 @@
+@import url('https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.47.0/tabler-icons.min.css');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -52,4 +54,8 @@ body {
 
 .badge {
   @apply inline-flex items-center rounded-full px-2.5 py-1 text-xs font-medium;
+}
+
+.icon-badge {
+  @apply flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-base;
 }

@@ -20,7 +20,7 @@ export async function GET(req: NextRequest, { params }: { params: { storeId: str
     const [sales, expenses] = await Promise.all([
       prisma.sale.findMany({
         where: { storeId: params.storeId, createdAt: { gte: boshlanish, lte: tugash } },
-        include: { items: true },
+        include: { items: true, payments: true },
         orderBy: { createdAt: "asc" },
       }),
       prisma.expense.findMany({
@@ -33,6 +33,14 @@ export async function GET(req: NextRequest, { params }: { params: { storeId: str
     const yalpiFoyda = umumiyTushum - umumiyTannarx;
     const umumiyXarajat = expenses.reduce((s, e) => s + Number(e.summa), 0);
     const sofFoyda = yalpiFoyda - umumiyXarajat;
+
+    // To'lov turlari bo'yicha taqsimot (Naqd / Karta / Boshqa)
+    const tolovTurlariBoyicha: Record<string, number> = { NAQD: 0, KARTA: 0, BOSHQA: 0 };
+    for (const sale of sales) {
+      for (const payment of sale.payments) {
+        tolovTurlariBoyicha[payment.turi] = (tolovTurlariBoyicha[payment.turi] || 0) + Number(payment.summa);
+      }
+    }
 
     // Kunlik kesimda savdo
     const kunlikMap = new Map<string, { savdo: number; foyda: number }>();
@@ -70,6 +78,7 @@ export async function GET(req: NextRequest, { params }: { params: { storeId: str
       umumiyXarajat,
       sofFoyda,
       sotuvlarSoni: sales.length,
+      tolovTurlariBoyicha,
       kunlikSavdo,
       engKopSotilgan,
       engKopFoydaKeltirgan,

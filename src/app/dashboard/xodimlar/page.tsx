@@ -12,6 +12,7 @@ type Role = "EGASI" | "MENEJER" | "SOTUVCHI";
 interface Member {
   id: string;
   role: Role;
+  egaMi: boolean;
   user: { id: string; ism: string; familiya: string; email: string | null; telefon: string | null };
 }
 
@@ -27,11 +28,18 @@ export default function XodimlarPage() {
   const [xodimlar, setXodimlar] = useState<Member[]>([]);
   const [yuklanmoqda, setYuklanmoqda] = useState(true);
   const [modalOchiq, setModalOchiq] = useState(false);
+  const [ism, setIsm] = useState("");
+  const [familiya, setFamiliya] = useState("");
   const [identifikator, setIdentifikator] = useState("");
+  const [parol, setParol] = useState("");
   const [role, setRole] = useState<Role>("SOTUVCHI");
   const [qoshilmoqda, setQoshilmoqda] = useState(false);
   const [ochirishId, setOchirishId] = useState<string | null>(null);
   const [ochirilmoqda, setOchirilmoqda] = useState(false);
+
+  const [parolModalMember, setParolModalMember] = useState<Member | null>(null);
+  const [yangiParol, setYangiParol] = useState("");
+  const [parolSaqlanmoqda, setParolSaqlanmoqda] = useState(false);
 
   const huquqYo_q = tanlanganDokon && tanlanganDokon.role === "SOTUVCHI";
 
@@ -60,11 +68,14 @@ export default function XodimlarPage() {
     try {
       await apiFetch(`/api/stores/${tanlanganDokon.id}/employees`, {
         method: "POST",
-        body: JSON.stringify({ identifikator, role }),
+        body: JSON.stringify({ ism, familiya, identifikator, parol, role }),
       });
       ko_rsat("Xodim qo'shildi.", "success");
       setModalOchiq(false);
+      setIsm("");
+      setFamiliya("");
       setIdentifikator("");
+      setParol("");
       yuklash();
     } catch (err) {
       ko_rsat(err instanceof ApiError ? err.message : "Xatolik yuz berdi.", "error");
@@ -95,6 +106,25 @@ export default function XodimlarPage() {
       ko_rsat(err instanceof ApiError ? err.message : "Xatolik yuz berdi.", "error");
     } finally {
       setOchirilmoqda(false);
+    }
+  }
+
+  async function parolniSaqlash(e: React.FormEvent) {
+    e.preventDefault();
+    if (!parolModalMember) return;
+    setParolSaqlanmoqda(true);
+    try {
+      await apiFetch(`/api/employees/${parolModalMember.id}`, {
+        method: "PUT",
+        body: JSON.stringify({ yangiParol }),
+      });
+      ko_rsat("Xodim paroli yangilandi.", "success");
+      setParolModalMember(null);
+      setYangiParol("");
+    } catch (err) {
+      ko_rsat(err instanceof ApiError ? err.message : "Xatolik yuz berdi.", "error");
+    } finally {
+      setParolSaqlanmoqda(false);
     }
   }
 
@@ -142,7 +172,9 @@ export default function XodimlarPage() {
                   </td>
                   <td className="px-4 py-3 text-slate-500">{m.user.email || m.user.telefon}</td>
                   <td className="px-4 py-3">
-                    {tanlanganDokon.role === "EGASI" ? (
+                    {m.egaMi ? (
+                      <span className="badge bg-brand-100 text-brand-700">{ROL_NOMI[m.role]} (asosiy)</span>
+                    ) : tanlanganDokon.role === "EGASI" ? (
                       <select
                         className="input !py-1.5 !text-xs"
                         value={m.role}
@@ -159,13 +191,24 @@ export default function XodimlarPage() {
                     )}
                   </td>
                   <td className="px-4 py-3 text-right">
-                    {tanlanganDokon.role === "EGASI" && (
-                      <button
-                        className="btn-ghost !px-2 !py-1 text-xs text-red-600"
-                        onClick={() => setOchirishId(m.id)}
-                      >
-                        O'chirish
-                      </button>
+                    {!m.egaMi && tanlanganDokon.role === "EGASI" && (
+                      <>
+                        <button
+                          className="btn-ghost !px-2 !py-1 text-xs"
+                          onClick={() => {
+                            setParolModalMember(m);
+                            setYangiParol("");
+                          }}
+                        >
+                          Parolni tiklash
+                        </button>
+                        <button
+                          className="btn-ghost !px-2 !py-1 text-xs text-red-600"
+                          onClick={() => setOchirishId(m.id)}
+                        >
+                          O'chirish
+                        </button>
+                      </>
                     )}
                   </td>
                 </tr>
@@ -177,16 +220,40 @@ export default function XodimlarPage() {
 
       <Modal ochiq={modalOchiq} onYopish={() => setModalOchiq(false)} sarlavha="Xodim qo'shish">
         <form onSubmit={xodimQoshish} className="space-y-4">
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <label className="label">Ism</label>
+              <input className="input" value={ism} onChange={(e) => setIsm(e.target.value)} />
+            </div>
+            <div>
+              <label className="label">Familiya</label>
+              <input className="input" value={familiya} onChange={(e) => setFamiliya(e.target.value)} />
+            </div>
+          </div>
           <div>
-            <label className="label">Xodimning email yoki telefon raqami</label>
+            <label className="label">Email yoki telefon raqami</label>
             <input
               className="input"
               value={identifikator}
               onChange={(e) => setIdentifikator(e.target.value)}
-              placeholder="Xodim avval tizimda ro'yxatdan o'tgan bo'lishi kerak"
               required
             />
           </div>
+          <div>
+            <label className="label">Parol</label>
+            <input
+              type="password"
+              className="input"
+              value={parol}
+              onChange={(e) => setParol(e.target.value)}
+              placeholder="Xodim shu parol bilan tizimga kiradi"
+            />
+          </div>
+          <p className="text-xs text-slate-400">
+            Agar bu email/telefon bilan hisob allaqachon mavjud bo'lsa, ism/familiya/parol
+            maydonlari e'tiborsiz qoldiriladi — foydalanuvchi shunchaki shu do'konga
+            xodim sifatida biriktiriladi.
+          </p>
           <div>
             <label className="label">Rol</label>
             <select className="input" value={role} onChange={(e) => setRole(e.target.value as Role)}>
@@ -199,6 +266,29 @@ export default function XodimlarPage() {
           </div>
           <button type="submit" className="btn-primary w-full" disabled={qoshilmoqda}>
             {qoshilmoqda ? "Qo'shilmoqda..." : "Qo'shish"}
+          </button>
+        </form>
+      </Modal>
+
+      <Modal
+        ochiq={!!parolModalMember}
+        onYopish={() => setParolModalMember(null)}
+        sarlavha={`Parolni tiklash — ${parolModalMember?.user.ism ?? ""} ${parolModalMember?.user.familiya ?? ""}`}
+      >
+        <form onSubmit={parolniSaqlash} className="space-y-4">
+          <div>
+            <label className="label">Yangi parol</label>
+            <input
+              type="password"
+              className="input"
+              value={yangiParol}
+              onChange={(e) => setYangiParol(e.target.value)}
+              required
+              minLength={6}
+            />
+          </div>
+          <button type="submit" className="btn-primary w-full" disabled={parolSaqlanmoqda}>
+            {parolSaqlanmoqda ? "Saqlanmoqda..." : "Parolni yangilash"}
           </button>
         </form>
       </Modal>

@@ -115,8 +115,13 @@ export default function XarajatlarPage() {
       </div>
 
       <div className="card p-5">
-        <div className="text-sm text-slate-500">Jami xarajatlar</div>
-        <div className="mt-1 text-2xl font-bold text-red-600">{pul(jamiXarajat)}</div>
+        <div className="mb-2 flex items-center gap-2.5">
+          <div className="icon-badge bg-red-50 text-red-600 dark:bg-red-950 dark:text-red-400">
+            <i className="ti ti-receipt-2" aria-hidden="true" />
+          </div>
+          <div className="text-sm text-slate-500">Jami xarajatlar</div>
+        </div>
+        <div className="text-2xl font-semibold text-red-600">{pul(jamiXarajat)}</div>
       </div>
 
       <div className="card overflow-x-auto">

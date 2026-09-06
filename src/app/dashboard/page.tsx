@@ -1,7 +1,9 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import { useStore } from "@/components/dashboard/StoreContext";
+import { useLanguage } from "@/components/i18n/LanguageContext";
 import { apiFetch } from "@/lib/api-client";
 import {
   LineChart,
@@ -26,6 +28,8 @@ interface InventoryData {
   jamiMahsulot: number;
   kamQolganSoni: number;
   tugaganSoni: number;
+  kamQolganMahsulotlar: { id: string; nomi: string; miqdori: number; minimalQoldiq: number }[];
+  tugaganMahsulotlar: { id: string; nomi: string }[];
 }
 
 interface SaleRow {
@@ -34,23 +38,44 @@ interface SaleRow {
   foyda: string;
   createdAt: string;
   items: { nomi: string; miqdori: number }[];
+  payments: { turi: "NAQD" | "KARTA" | "BOSHQA" }[];
 }
+
+const TOLOV_BELGISI: Record<string, string> = { NAQD: "💵 Naqd", KARTA: "💳 Karta", BOSHQA: "🔁 Boshqa" };
 
 function pul(n: number) {
   return new Intl.NumberFormat("uz-UZ").format(Math.round(n)) + " so'm";
 }
 
-function StatCard({ sarlavha, qiymat, rang }: { sarlavha: string; qiymat: string; rang?: string }) {
+function StatCard({
+  sarlavha,
+  qiymat,
+  rang,
+  ikon,
+  ikonRang,
+}: {
+  sarlavha: string;
+  qiymat: string;
+  rang?: string;
+  ikon: string;
+  ikonRang: string;
+}) {
   return (
     <div className="card p-5">
-      <div className="text-sm text-slate-500">{sarlavha}</div>
-      <div className={`mt-2 text-2xl font-bold ${rang || "text-slate-900 dark:text-slate-100"}`}>{qiymat}</div>
+      <div className="mb-3 flex items-center gap-2.5">
+        <div className={`icon-badge ${ikonRang}`}>
+          <i className={`ti ti-${ikon}`} aria-hidden="true" />
+        </div>
+        <div className="text-sm text-slate-500">{sarlavha}</div>
+      </div>
+      <div className={`text-2xl font-semibold ${rang || "text-slate-900 dark:text-slate-100"}`}>{qiymat}</div>
     </div>
   );
 }
 
 export default function DashboardHomePage() {
   const { tanlanganDokon } = useStore();
+  const { t } = useLanguage();
   const [hisobot, setHisobot] = useState<ReportData | null>(null);
   const [ombor, setOmbor] = useState<InventoryData | null>(null);
   const [songgiSotuvlar, setSonggiSotuvlar] = useState<SaleRow[]>([]);
@@ -102,20 +127,92 @@ export default function DashboardHomePage() {
       </div>
 
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
-        <StatCard sarlavha="Bugungi savdo" qiymat={pul(bugungi.savdo)} />
-        <StatCard sarlavha="Bugungi foyda" qiymat={pul(bugungi.foyda)} rang="text-emerald-600" />
-        <StatCard sarlavha="Bugungi xarajat" qiymat={pul(bugungi.xarajat)} rang="text-red-600" />
-        <StatCard sarlavha="Bugungi sotuvlar soni" qiymat={String(bugungi.soni)} />
+        <StatCard
+          sarlavha={t("dash.bugungiSavdo")}
+          qiymat={pul(bugungi.savdo)}
+          ikon="cash"
+          ikonRang="bg-blue-50 text-blue-600 dark:bg-blue-950 dark:text-blue-400"
+        />
+        <StatCard
+          sarlavha={t("dash.bugungiFoyda")}
+          qiymat={pul(bugungi.foyda)}
+          rang="text-emerald-600"
+          ikon="trending-up"
+          ikonRang="bg-emerald-50 text-emerald-600 dark:bg-emerald-950 dark:text-emerald-400"
+        />
+        <StatCard
+          sarlavha={t("dash.bugungiXarajat")}
+          qiymat={pul(bugungi.xarajat)}
+          rang="text-red-600"
+          ikon="receipt-2"
+          ikonRang="bg-red-50 text-red-600 dark:bg-red-950 dark:text-red-400"
+        />
+        <StatCard
+          sarlavha={t("dash.bugungiSotuvlarSoni")}
+          qiymat={String(bugungi.soni)}
+          ikon="shopping-cart"
+          ikonRang="bg-purple-50 text-purple-600 dark:bg-purple-950 dark:text-purple-400"
+        />
       </div>
 
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-3">
-        <StatCard sarlavha="Ombordagi mahsulotlar" qiymat={String(ombor?.jamiMahsulot ?? 0)} />
-        <StatCard sarlavha="Kam qolgan mahsulotlar" qiymat={String(ombor?.kamQolganSoni ?? 0)} rang="text-amber-600" />
-        <StatCard sarlavha="Tugagan mahsulotlar" qiymat={String(ombor?.tugaganSoni ?? 0)} rang="text-red-600" />
+        <Link href="/dashboard/ombor" className="card p-5 transition hover:border-brand-400">
+          <div className="mb-3 flex items-center gap-2.5">
+            <div className="icon-badge bg-blue-50 text-blue-600 dark:bg-blue-950 dark:text-blue-400">
+              <i className="ti ti-package" aria-hidden="true" />
+            </div>
+            <div className="text-sm text-slate-500">{t("dash.ombordagiMahsulotlar")}</div>
+          </div>
+          <div className="text-2xl font-semibold">{ombor?.jamiMahsulot ?? 0}</div>
+        </Link>
+        <Link href="/dashboard/ombor" className="card p-5 transition hover:border-brand-400">
+          <div className="mb-3 flex items-center gap-2.5">
+            <div className="icon-badge bg-amber-50 text-amber-600 dark:bg-amber-950 dark:text-amber-400">
+              <i className="ti ti-alert-triangle" aria-hidden="true" />
+            </div>
+            <div className="text-sm text-slate-500">{t("dash.kamQolganMahsulotlar")}</div>
+          </div>
+          <div className="text-2xl font-semibold text-amber-600">{ombor?.kamQolganSoni ?? 0}</div>
+          {ombor && ombor.kamQolganMahsulotlar.length > 0 && (
+            <ul className="mt-2 space-y-0.5 text-xs text-slate-500">
+              {ombor.kamQolganMahsulotlar.slice(0, 3).map((p) => (
+                <li key={p.id} className="truncate">
+                  {p.nomi} — {p.miqdori} dona qoldi
+                </li>
+              ))}
+              {ombor.kamQolganMahsulotlar.length > 3 && (
+                <li className="text-brand-600">
+                  +{ombor.kamQolganMahsulotlar.length - 3} ta yana...
+                </li>
+              )}
+            </ul>
+          )}
+        </Link>
+        <Link href="/dashboard/ombor" className="card p-5 transition hover:border-brand-400">
+          <div className="mb-3 flex items-center gap-2.5">
+            <div className="icon-badge bg-red-50 text-red-600 dark:bg-red-950 dark:text-red-400">
+              <i className="ti ti-alert-circle" aria-hidden="true" />
+            </div>
+            <div className="text-sm text-slate-500">{t("dash.tugaganMahsulotlar")}</div>
+          </div>
+          <div className="text-2xl font-semibold text-red-600">{ombor?.tugaganSoni ?? 0}</div>
+          {ombor && ombor.tugaganMahsulotlar.length > 0 && (
+            <ul className="mt-2 space-y-0.5 text-xs text-slate-500">
+              {ombor.tugaganMahsulotlar.slice(0, 3).map((p) => (
+                <li key={p.id} className="truncate">
+                  {p.nomi}
+                </li>
+              ))}
+              {ombor.tugaganMahsulotlar.length > 3 && (
+                <li className="text-brand-600">+{ombor.tugaganMahsulotlar.length - 3} ta yana...</li>
+              )}
+            </ul>
+          )}
+        </Link>
       </div>
 
       <div className="card p-5">
-        <h2 className="mb-4 font-semibold">So'nggi 30 kunlik savdo va foyda</h2>
+        <h2 className="mb-4 font-semibold">{t("dash.songgiSavdo")}</h2>
         <div className="h-72 w-full">
           <ResponsiveContainer width="100%" height="100%">
             <LineChart data={hisobot?.kunlikSavdo || []}>
@@ -131,7 +228,7 @@ export default function DashboardHomePage() {
       </div>
 
       <div className="card p-5">
-        <h2 className="mb-4 font-semibold">So'nggi sotuvlar</h2>
+        <h2 className="mb-4 font-semibold">{t("dash.songgiSotuvlar")}</h2>
         {songgiSotuvlar.length === 0 ? (
           <p className="text-sm text-slate-400">Hali sotuvlar yo'q.</p>
         ) : (
@@ -140,7 +237,14 @@ export default function DashboardHomePage() {
               <div key={s.id} className="flex items-center justify-between rounded-xl border border-slate-100 px-4 py-3 text-sm dark:border-slate-800">
                 <div>
                   <div className="font-medium">{s.items.map((i) => i.nomi).join(", ")}</div>
-                  <div className="text-xs text-slate-400">{new Date(s.createdAt).toLocaleString("uz-UZ")}</div>
+                  <div className="mt-1 flex items-center gap-2 text-xs text-slate-400">
+                    <span>{new Date(s.createdAt).toLocaleString("uz-UZ")}</span>
+                    {s.payments[0] && (
+                      <span className="badge bg-slate-100 text-slate-600 dark:bg-slate-800">
+                        {TOLOV_BELGISI[s.payments[0].turi]}
+                      </span>
+                    )}
+                  </div>
                 </div>
                 <div className="font-semibold text-brand-700">{pul(Number(s.jamiSumma))}</div>
               </div>

@@ -1,4 +1,7 @@
+"use client";
+
 import Link from "next/link";
+import { useLanguage } from "@/components/i18n/LanguageContext";
 
 const IMKONIYATLAR = [
   { sarlavha: "Kassa / POS", tavsif: "Shtrix-kod orqali tezkor sotuv, savat va bir necha to'lov turi." },
@@ -22,39 +25,40 @@ const SAVOLLAR = [
 ];
 
 export default function LandingPage() {
+  const { t } = useLanguage();
   return (
     <main className="min-h-screen bg-gradient-to-b from-white to-slate-50">
       <header className="mx-auto flex max-w-6xl items-center justify-between px-6 py-6">
         <div className="text-xl font-bold text-brand-700">DoConBoshqar</div>
         <nav className="hidden gap-8 text-sm font-medium text-slate-600 md:flex">
-          <a href="#platforma">Platforma haqida</a>
-          <a href="#imkoniyatlar">Imkoniyatlar</a>
-          <a href="#narxlar">Narxlar</a>
-          <a href="#savol-javob">Savol-javob</a>
+          <a href="#platforma">{t("landing.platformaHaqida")}</a>
+          <a href="#imkoniyatlar">{t("landing.imkoniyatlar")}</a>
+          <a href="#narxlar">{t("landing.narxlar")}</a>
+          <a href="#savol-javob">{t("landing.savolJavob")}</a>
         </nav>
         <div className="flex gap-3">
-          <Link href="/kirish" className="btn-secondary">Kirish</Link>
-          <Link href="/royxatdan-otish" className="btn-primary">Do'kon ochish</Link>
+          <Link href="/kirish" className="btn-secondary">{t("landing.kirish")}</Link>
+          <Link href="/royxatdan-otish" className="btn-primary">{t("landing.dokonOchish")}</Link>
         </div>
       </header>
 
       <section className="mx-auto max-w-4xl px-6 py-20 text-center">
         <h1 className="text-4xl font-extrabold tracking-tight text-slate-900 sm:text-5xl">
-          Do'koningizni <span className="text-brand-600">oson boshqaring</span>
+          {t("landing.headline1")} <span className="text-brand-600">{t("landing.headline2")}</span>
         </h1>
         <p className="mx-auto mt-5 max-w-2xl text-lg text-slate-600">
-          Mahsulotlar, sotuvlar, ombor, xarajatlar va foydani bitta tizimda boshqaring.
+          {t("landing.subtitle")}
         </p>
         <div className="mt-8 flex justify-center gap-4">
-          <Link href="/royxatdan-otish" className="btn-primary !px-6 !py-3 text-base">Do'kon ochish</Link>
-          <Link href="/kirish" className="btn-secondary !px-6 !py-3 text-base">Kirish</Link>
+          <Link href="/royxatdan-otish" className="btn-primary !px-6 !py-3 text-base">{t("landing.dokonOchish")}</Link>
+          <Link href="/kirish" className="btn-secondary !px-6 !py-3 text-base">{t("landing.kirish")}</Link>
         </div>
       </section>
 
       <section id="platforma" className="mx-auto max-w-6xl px-6 py-16">
         <div className="card grid gap-8 p-10 md:grid-cols-2 md:items-center">
           <div>
-            <h2 className="text-2xl font-bold">Platforma haqida</h2>
+            <h2 className="text-2xl font-bold">{t("landing.platformaHaqida")}</h2>
             <p className="mt-3 text-slate-600">
               DoConBoshqar — kichik va o'rta biznes uchun yaratilgan to'liq savdo va ombor
               boshqaruv tizimi. Kassa, ombor va moliyaviy hisobotlaringiz bitta joyda, real
@@ -75,7 +79,7 @@ export default function LandingPage() {
       </section>
 
       <section id="imkoniyatlar" className="mx-auto max-w-6xl px-6 py-16">
-        <h2 className="mb-10 text-center text-2xl font-bold">Imkoniyatlar</h2>
+        <h2 className="mb-10 text-center text-2xl font-bold">{t("landing.imkoniyatlar")}</h2>
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {IMKONIYATLAR.map((f) => (
             <div key={f.sarlavha} className="card p-6">
@@ -87,7 +91,7 @@ export default function LandingPage() {
       </section>
 
       <section id="narxlar" className="mx-auto max-w-6xl px-6 py-16">
-        <h2 className="mb-10 text-center text-2xl font-bold">Narxlar</h2>
+        <h2 className="mb-10 text-center text-2xl font-bold">{t("landing.narxlar")}</h2>
         <div className="grid gap-6 md:grid-cols-3">
           {NARXLAR.map((p) => (
             <div
@@ -106,7 +110,7 @@ export default function LandingPage() {
       </section>
 
       <section id="savol-javob" className="mx-auto max-w-3xl px-6 py-16">
-        <h2 className="mb-10 text-center text-2xl font-bold">Savol-javob</h2>
+        <h2 className="mb-10 text-center text-2xl font-bold">{t("landing.savolJavob")}</h2>
         <div className="space-y-4">
           {SAVOLLAR.map((qa) => (
             <div key={qa.s} className="card p-5">
