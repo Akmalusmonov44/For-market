@@ -37,10 +37,24 @@ model User {
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 
-  memberships StoreMember[]
+  memberships  StoreMember[]
+  resetTokens  PasswordResetToken[]
 
   @@index([email])
   @@index([telefon])
+}
+
+model PasswordResetToken {
+  id        String   @id @default(cuid())
+  userId    String
+  tokenHash String   @unique
+  expiresAt DateTime
+  used      Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
 }
 
 model Store {
@@ -144,7 +158,13 @@ model SaleItem {
   miqdori    Int
 
   sale    Sale    @relation(fields: [saleId], references: [id], onDelete: Cascade)
-  product Product @relation(fields: [productId], references: [id])
+  // Eslatma: nomi/narxi/tannarx allaqachon sotuv vaqtidagi "snapshot"
+  // sifatida saqlanadi, shuning uchun Product o'chirilganda SaleItem'ni ham
+  // cascade orqali o'chirish xavfsiz — Sale'ning umumiy summasi/foydasi
+  // buzilmaydi (ular Sale modelida alohida saqlanadi). Bu shuningdek
+  // do'kon/mahsulot o'chirilganda "foreign key RESTRICT" xatosining oldini
+  // oladi.
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
 
   @@index([saleId])
   @@index([productId])

@@ -84,3 +84,18 @@ export const employeeInviteSchema = z.object({
   identifikator: z.string().min(3, "Email yoki telefon raqamini kiriting."),
   role: z.enum(["EGASI", "MENEJER", "SOTUVCHI"]),
 });
+
+export const forgotPasswordSchema = z.object({
+  identifikator: z.string().min(3, "Email yoki telefon raqamini kiriting."),
+});
+
+export const resetPasswordSchema = z
+  .object({
+    token: z.string().min(10, "Token noto'g'ri."),
+    yangiParol: z.string().min(6, "Parol kamida 6 ta belgidan iborat bo'lishi kerak."),
+    yangiParolTasdiq: z.string(),
+  })
+  .refine((data) => data.yangiParol === data.yangiParolTasdiq, {
+    message: "Parollar mos kelmadi.",
+    path: ["yangiParolTasdiq"],
+  });

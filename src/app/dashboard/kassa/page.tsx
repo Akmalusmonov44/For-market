@@ -38,7 +38,6 @@ export default function KassaPage() {
     if (!tanlanganDokon) return;
     let bekor = false;
     async function yuklash() {
-      if (!tanlanganDokon) return;
       setYuklanmoqda(true);
       const data = await apiFetch<{ mahsulotlar: Product[] }>(`/api/stores/${tanlanganDokon.id}/products`);
       if (!bekor) setMahsulotlar(data.mahsulotlar);

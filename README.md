@@ -171,6 +171,8 @@ POST   /api/auth/register
 POST   /api/auth/login
 POST   /api/auth/logout
 GET    /api/auth/me
+POST   /api/auth/forgot-password
+POST   /api/auth/reset-password
 
 GET    /api/stores
 POST   /api/stores
@@ -260,6 +262,36 @@ Ochilgan oynada `User` jadvalidan o'zingizning yozuvingizni toping va
 > o'zgarishlarni qo'llash uchun qayta migration ishga tushiring:
 > ```bash
 > npx prisma migrate dev --name add_super_admin
+> ```
+
+## 14. Parolni unutdim / tiklash
+
+Foydalanuvchi login sahifasidagi "Parolni unutdingizmi?" havolasi orqali:
+
+1. Email (yoki telefon) kiritadi
+2. Agar shu email bilan hisob mavjud bo'lsa, **1 soat amal qiladigan**, bir martalik
+   tiklash havolasi shu emailga yuboriladi (token database'da faqat SHA-256 **hash**
+   ko'rinishida saqlanadi — xom token hech qachon bazada saqlanmaydi)
+3. Havola orqali yangi parol o'rnatiladi, token darhol "ishlatilgan" deb belgilanadi
+
+**Email yuborish sozlamasi:** `.env` faylida `SMTP_*` o'zgaruvchilarini to'ldiring
+(Gmail App Password, Resend, SendGrid, Mailgun — barchasi SMTP orqali ishlaydi).
+
+**Agar SMTP sozlanmagan bo'lsa** (masalan, lokal development'da): tiklash havolasi
+haqiqiy email yuborilmasdan, terminalga (konsolga) chop etiladi — shu orqali
+funksiyani email xizmatisiz ham sinab ko'rishingiz mumkin.
+
+**Eslatma:** bu funksiya faqat email manzili bor foydalanuvchilar uchun ishlaydi
+(chunki SMS yuborish alohida, pullik xizmat talab qiladi — masalan Eskiz.uz).
+Faqat telefon raqami bilan ro'yxatdan o'tgan foydalanuvchilar uchun parolni
+platforma admin paneli (`/admin/foydalanuvchilar`) orqali qo'lda tiklash mumkin.
+
+> ⚠️ **Muhim:** bu funksiya ham schema.prisma'ga yangi jadval
+> (`PasswordResetToken`) qo'shadi va `nodemailer` paketini talab qiladi.
+> Mavjud loyihangizni yangilayotgan bo'lsangiz:
+> ```bash
+> npm install
+> npx prisma migrate dev --name add_password_reset
 > ```
 
 ## Loyiha strukturasi

@@ -64,7 +64,6 @@ export default function DashboardHomePage() {
     async function yuklash() {
       setYuklanmoqda(true);
       try {
-        if (!tanlanganDokon) return;
         const bugun = new Date().toISOString().slice(0, 10);
         const [h, o, bugungiHisobot, sotuvlar] = await Promise.all([
           apiFetch<ReportData>(`/api/stores/${tanlanganDokon.id}/reports`),
