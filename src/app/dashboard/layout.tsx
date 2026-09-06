@@ -19,7 +19,14 @@ function DashboardInner({ children }: { children: React.ReactNode }) {
       return;
     }
     if (dokonlar.length === 0) {
-      router.replace("/dokon-yaratish");
+      // Super-admin hisobi hech qanday do'konga a'zo bo'lmasligi mumkin —
+      // bunday holda uni "do'kon yaratish" sahifasiga emas, to'g'ridan-to'g'ri
+      // platforma admin paneliga yo'naltiramiz.
+      if (foydalanuvchi.isSuperAdmin) {
+        router.replace("/admin");
+      } else {
+        router.replace("/dokon-yaratish");
+      }
     }
   }, [yuklanmoqda, foydalanuvchi, dokonlar, router]);
 

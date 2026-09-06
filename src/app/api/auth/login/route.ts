@@ -35,6 +35,7 @@ export async function POST(req: NextRequest) {
         familiya: user.familiya,
         email: user.email,
         telefon: user.telefon,
+        isSuperAdmin: user.isSuperAdmin,
       },
     });
     res.cookies.set(AUTH_COOKIE_NAME, token, {
