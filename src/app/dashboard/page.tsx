@@ -41,7 +41,7 @@ interface SaleRow {
   payments: { turi: "NAQD" | "KARTA" | "BOSHQA" }[];
 }
 
-const TOLOV_BELGISI: Record<string, string> = { NAQD: "💵 Naqd", KARTA: "💳 Karta", BOSHQA: "🔁 Boshqa" };
+const TOLOV_BELGISI: Record<string, string> = { NAQD: "💵 Naqd", KARTA: "💳 Karta", QARZ: "📝 Nasiya", BOSHQA: "🔁 Boshqa" };
 
 function pul(n: number) {
   return new Intl.NumberFormat("uz-UZ").format(Math.round(n)) + " so'm";
@@ -88,6 +88,7 @@ export default function DashboardHomePage() {
 
     async function yuklash() {
           if (!tanlanganDokon) return;
+
       setYuklanmoqda(true);
       try {
         const bugun = new Date().toISOString().slice(0, 10);
@@ -127,7 +128,7 @@ export default function DashboardHomePage() {
         <p className="text-sm text-slate-500">{tanlanganDokon.nomi}</p>
       </div>
 
-      <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <StatCard
           sarlavha={t("dash.bugungiSavdo")}
           qiymat={pul(bugungi.savdo)}
@@ -156,7 +157,7 @@ export default function DashboardHomePage() {
         />
       </div>
 
-      <div className="grid grid-cols-2 gap-4 lg:grid-cols-3">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
         <Link href="/dashboard/ombor" className="card p-5 transition hover:border-brand-400">
           <div className="mb-3 flex items-center gap-2.5">
             <div className="icon-badge bg-blue-50 text-blue-600 dark:bg-blue-950 dark:text-blue-400">

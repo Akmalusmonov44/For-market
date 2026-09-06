@@ -12,7 +12,7 @@ interface ReportData {
   umumiyXarajat: number;
   sofFoyda: number;
   sotuvlarSoni: number;
-  tolovTurlariBoyicha: { NAQD: number; KARTA: number; BOSHQA: number };
+  tolovTurlariBoyicha: { NAQD: number; KARTA: number; QARZ: number; BOSHQA: number };
   kunlikSavdo: { sana: string; savdo: number; foyda: number }[];
   engKopSotilgan: { nomi: string; miqdor: number; tushum: number; foyda: number }[];
   engKopFoydaKeltirgan: { nomi: string; miqdor: number; tushum: number; foyda: number }[];
@@ -76,7 +76,7 @@ export default function HisobotlarPage() {
         <div className="text-slate-400">Yuklanmoqda...</div>
       ) : (
         <>
-          <div className="grid grid-cols-2 gap-4 lg:grid-cols-3">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
             <div className="card p-5">
               <div className="mb-2 flex items-center gap-2.5">
                 <div className="icon-badge bg-blue-50 text-blue-600 dark:bg-blue-950 dark:text-blue-400">
@@ -126,7 +126,7 @@ export default function HisobotlarPage() {
 
           <div className="card p-5">
             <h2 className="mb-4 font-semibold">To'lov turlari bo'yicha</h2>
-            <div className="grid grid-cols-3 gap-4">
+            <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
               <div className="rounded-xl bg-slate-50 p-4 text-center dark:bg-slate-800/50">
                 <div className="text-sm text-slate-500">💵 Naqd pul</div>
                 <div className="mt-1 font-bold">{pul(data.tolovTurlariBoyicha.NAQD)}</div>
@@ -134,6 +134,10 @@ export default function HisobotlarPage() {
               <div className="rounded-xl bg-slate-50 p-4 text-center dark:bg-slate-800/50">
                 <div className="text-sm text-slate-500">💳 Bank karta</div>
                 <div className="mt-1 font-bold">{pul(data.tolovTurlariBoyicha.KARTA)}</div>
+              </div>
+              <div className="rounded-xl bg-slate-50 p-4 text-center dark:bg-slate-800/50">
+                <div className="text-sm text-slate-500">📝 Nasiya</div>
+                <div className="mt-1 font-bold">{pul(data.tolovTurlariBoyicha.QARZ)}</div>
               </div>
               <div className="rounded-xl bg-slate-50 p-4 text-center dark:bg-slate-800/50">
                 <div className="text-sm text-slate-500">🔁 Boshqa</div>

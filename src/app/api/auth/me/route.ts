@@ -1,9 +1,7 @@
-export const dynamic = 'force-dynamic';
 import { NextResponse } from "next/server";
 import { getCurrentUser } from "@/lib/session";
 import { handleError } from "@/lib/api-helpers";
 import { prisma } from "@/lib/db";
-
 
 export async function GET() {
   try {

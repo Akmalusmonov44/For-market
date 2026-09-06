@@ -25,15 +25,25 @@ export default function Topbar({ onMenyu }: { onMenyu: () => void }) {
       <div className="hidden text-sm text-slate-500 md:block">
         {foydalanuvchi ? `${t("topbar.xushKelibsiz")}, ${foydalanuvchi.ism}` : ""}
       </div>
-      <div className="flex items-center gap-3 pr-20 md:pr-24">
+      <div className="flex items-center gap-2 pr-16 sm:gap-3 sm:pr-20 md:pr-24">
         {foydalanuvchi?.isSuperAdmin && (
-          <Link href="/admin" className="btn-secondary !px-3 !py-2 text-sm">
-            {t("topbar.platformaAdmin")}
+          <Link
+            href="/admin"
+            className="btn-secondary flex !items-center !gap-1.5 !px-2.5 !py-2 text-sm sm:!px-3"
+            aria-label={t("topbar.platformaAdmin")}
+          >
+            <i className="ti ti-shield-lock text-base" aria-hidden="true" />
+            <span className="hidden sm:inline">{t("topbar.platformaAdmin")}</span>
           </Link>
         )}
         <StoreSelector />
-        <button onClick={chiqish} className="btn-secondary !px-3 !py-2 text-sm">
-          {t("topbar.chiqish")}
+        <button
+          onClick={chiqish}
+          className="btn-secondary flex !items-center !gap-1.5 !px-2.5 !py-2 text-sm sm:!px-3"
+          aria-label={t("topbar.chiqish")}
+        >
+          <i className="ti ti-logout text-base" aria-hidden="true" />
+          <span className="hidden sm:inline">{t("topbar.chiqish")}</span>
         </button>
       </div>
     </header>

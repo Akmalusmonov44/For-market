@@ -53,7 +53,7 @@ export default function OmborPage() {
     <div className="space-y-6">
       <h1 className="text-2xl font-bold">Ombor</h1>
 
-      <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <div className="card p-5">
           <div className="mb-3 flex items-center gap-2.5">
             <div className="icon-badge bg-blue-50 text-blue-600 dark:bg-blue-950 dark:text-blue-400">

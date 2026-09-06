@@ -1,6 +1,6 @@
 "use client";
 
-import { Suspense, useEffect, useState } from "react";
+import { useEffect, useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { apiFetch, ApiError } from "@/lib/api-client";
@@ -15,9 +15,6 @@ function KirishForm() {
   const [xato, setXato] = useState<string | null>(null);
   const [yuklanmoqda, setYuklanmoqda] = useState(false);
 
-  // Agar foydalanuvchi allaqachon (haqiqiy, tasdiqlangan) sessiyaga ega
-  // bo'lsa, uni qayta login qildirmasdan to'g'ridan-to'g'ri ichkariga
-  // yuboramiz.
   useEffect(() => {
     (async () => {
       try {
@@ -107,7 +104,15 @@ function KirishForm() {
 
 export default function KirishPage() {
   return (
-    <Suspense fallback={<div className="flex min-h-screen items-center justify-center">Yuklanmoqda...</div>}>
+    <Suspense
+      fallback={
+        <main className="flex min-h-screen items-center justify-center bg-slate-50 px-4 py-10">
+          <div className="card w-full max-w-md p-8 text-center text-slate-500">
+            Yuklanmoqda...
+          </div>
+        </main>
+      }
+    >
       <KirishForm />
     </Suspense>
   );

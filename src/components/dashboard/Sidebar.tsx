@@ -11,6 +11,7 @@ const MENYU = [
   { href: "/dashboard/mahsulotlar", key: "nav.mahsulotlar" as const, icon: "box" },
   { href: "/dashboard/ombor", key: "nav.ombor" as const, icon: "building-warehouse" },
   { href: "/dashboard/xarajatlar", key: "nav.xarajatlar" as const, icon: "wallet" },
+  { href: "/dashboard/qarzdorlar", key: "nav.qarzdorlar" as const, icon: "report-money" },
   { href: "/dashboard/hisobotlar", key: "nav.hisobotlar" as const, icon: "chart-bar" },
   { href: "/dashboard/xodimlar", key: "nav.xodimlar" as const, icon: "users" },
   { href: "/dashboard/sozlamalar", key: "nav.sozlamalar" as const, icon: "settings" },

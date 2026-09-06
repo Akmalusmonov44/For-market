@@ -1,6 +1,6 @@
 "use client";
 
-import { Suspense, useState } from "react";
+import { useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { apiFetch, ApiError } from "@/lib/api-client";
@@ -36,66 +36,76 @@ function ParolniTiklashForm() {
 
   if (!token) {
     return (
-      <div className="card w-full max-w-md p-8 text-center">
-        <h1 className="text-xl font-bold">Havola yaroqsiz</h1>
-        <p className="mt-2 text-sm text-slate-500">
-          Token topilmadi. Iltimos, parolni tiklashni qaytadan so'rang.
-        </p>
-        <Link href="/parolni-unutdim" className="btn-primary mt-6 inline-flex">
-          Parolni tiklashni so'rash
-        </Link>
-      </div>
+      <main className="flex min-h-screen items-center justify-center bg-slate-50 px-4 py-10">
+        <div className="card w-full max-w-md p-8 text-center">
+          <h1 className="text-xl font-bold">Havola yaroqsiz</h1>
+          <p className="mt-2 text-sm text-slate-500">
+            Token topilmadi. Iltimos, parolni tiklashni qaytadan so'rang.
+          </p>
+          <Link href="/parolni-unutdim" className="btn-primary mt-6 inline-flex">
+            Parolni tiklashni so'rash
+          </Link>
+        </div>
+      </main>
     );
   }
 
   return (
-    <div className="card w-full max-w-md p-8">
-      <h1 className="text-2xl font-bold">Yangi parol o'rnatish</h1>
+    <main className="flex min-h-screen items-center justify-center bg-slate-50 px-4 py-10">
+      <div className="card w-full max-w-md p-8">
+        <h1 className="text-2xl font-bold">Yangi parol o'rnatish</h1>
 
-      {xabar && (
-        <div className="mt-4 rounded-xl bg-emerald-50 px-4 py-3 text-sm text-emerald-700">
-          {xabar} Kirish sahifasiga yo'naltirilmoqda...
-        </div>
-      )}
-      {xato && <div className="mt-4 rounded-xl bg-red-50 px-4 py-3 text-sm text-red-700">{xato}</div>}
+        {xabar && (
+          <div className="mt-4 rounded-xl bg-emerald-50 px-4 py-3 text-sm text-emerald-700">
+            {xabar} Kirish sahifasiga yo'naltirilmoqda...
+          </div>
+        )}
+        {xato && <div className="mt-4 rounded-xl bg-red-50 px-4 py-3 text-sm text-red-700">{xato}</div>}
 
-      {!xabar && (
-        <form onSubmit={onSubmit} className="mt-6 space-y-4">
-          <div>
-            <label className="label">Yangi parol</label>
-            <input
-              type="password"
-              className="input"
-              value={yangiParol}
-              onChange={(e) => setYangiParol(e.target.value)}
-              required
-            />
-          </div>
-          <div>
-            <label className="label">Yangi parolni tasdiqlang</label>
-            <input
-              type="password"
-              className="input"
-              value={yangiParolTasdiq}
-              onChange={(e) => setYangiParolTasdiq(e.target.value)}
-              required
-            />
-          </div>
-          <button type="submit" className="btn-primary w-full" disabled={yuklanmoqda}>
-            {yuklanmoqda ? "Saqlanmoqda..." : "Parolni yangilash"}
-          </button>
-        </form>
-      )}
-    </div>
+        {!xabar && (
+          <form onSubmit={onSubmit} className="mt-6 space-y-4">
+            <div>
+              <label className="label">Yangi parol</label>
+              <input
+                type="password"
+                className="input"
+                value={yangiParol}
+                onChange={(e) => setYangiParol(e.target.value)}
+                required
+              />
+            </div>
+            <div>
+              <label className="label">Yangi parolni tasdiqlang</label>
+              <input
+                type="password"
+                className="input"
+                value={yangiParolTasdiq}
+                onChange={(e) => setYangiParolTasdiq(e.target.value)}
+                required
+              />
+            </div>
+            <button type="submit" className="btn-primary w-full" disabled={yuklanmoqda}>
+              {yuklanmoqda ? "Saqlanmoqda..." : "Parolni yangilash"}
+            </button>
+          </form>
+        )}
+      </div>
+    </main>
   );
 }
 
 export default function ParolniTiklashPage() {
   return (
-    <main className="flex min-h-screen items-center justify-center bg-slate-50 px-4 py-10">
-      <Suspense fallback={<div className="card w-full max-w-md p-8 text-center">Yuklanmoqda...</div>}>
-        <ParolniTiklashForm />
-      </Suspense>
-    </main>
+    <Suspense
+      fallback={
+        <main className="flex min-h-screen items-center justify-center bg-slate-50 px-4 py-10">
+          <div className="card w-full max-w-md p-8 text-center text-slate-500">
+            Yuklanmoqda...
+          </div>
+        </main>
+      }
+    >
+      <ParolniTiklashForm />
+    </Suspense>
   );
 }

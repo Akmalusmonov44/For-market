@@ -16,6 +16,7 @@ enum StoreRole {
 enum PaymentType {
   NAQD // Cash
   KARTA // Card
+  QARZ // Nasiya / debt — customer owes this amount
   BOSHQA // Other
 }
 
@@ -77,6 +78,7 @@ model Store {
   sales        Sale[]
   expenses     Expense[]
   inventoryTxs InventoryTransaction[]
+  debts        Debt[]
 
   @@index([ownerId])
 }
@@ -144,6 +146,7 @@ model Sale {
   store    Store      @relation(fields: [storeId], references: [id], onDelete: Cascade)
   items    SaleItem[]
   payments Payment[]
+  debts    Debt[]
 
   @@index([storeId, createdAt])
 }
@@ -211,4 +214,23 @@ model InventoryTransaction {
 
   @@index([storeId, createdAt])
   @@index([productId])
+}
+
+model Debt {
+  id            String   @id @default(cuid())
+  storeId       String
+  saleId        String? // agar kassadagi sotuvdan yaratilgan bo'lsa
+  mijozIsmi     String
+  mijozTelefon  String?
+  summa         Decimal  @db.Decimal(14, 2) // qarzning boshlang'ich summasi
+  toLanganSumma Decimal  @db.Decimal(14, 2) @default(0) // shu paytgacha to'langan qism
+  izoh          String?
+  sana          DateTime @default(now())
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  store Store @relation(fields: [storeId], references: [id], onDelete: Cascade)
+  sale  Sale? @relation(fields: [saleId], references: [id], onDelete: SetNull)
+
+  @@index([storeId, createdAt])
 }

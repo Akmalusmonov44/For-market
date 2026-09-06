@@ -101,6 +101,21 @@ export async function POST(req: NextRequest, { params }: { params: { storeId: st
         include: { items: true, payments: true },
       });
 
+      // 3b) Agar to'lov turi "Nasiya (qarz)" bo'lsa, shu sotuvga bog'liq
+      // Qarz yozuvini yaratamiz — mijoz keyinroq to'lashi kutiladi.
+      if (data.paymentType === "QARZ") {
+        await tx.debt.create({
+          data: {
+            storeId: params.storeId,
+            saleId: sale.id,
+            mijozIsmi: data.mijozIsmi || "Noma'lum mijoz",
+            mijozTelefon: data.mijozTelefon || null,
+            summa: jamiSumma,
+            izoh: "Kassadagi sotuvdan avtomatik yaratildi",
+          },
+        });
+      }
+
       // 4) Ombor qoldig'ini kamaytiramiz va InventoryTransaction yozamiz.
       //
       // MUHIM (race condition himoyasi): oddiy `update` o'rniga `updateMany`

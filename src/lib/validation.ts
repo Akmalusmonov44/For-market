@@ -60,16 +60,35 @@ export const categorySchema = z.object({
   nomi: z.string().min(1, "Kategoriya nomini kiriting."),
 });
 
-export const saleSchema = z.object({
-  items: z
-    .array(
-      z.object({
-        productId: z.string().min(1),
-        miqdori: z.coerce.number().int().positive("Miqdor musbat son bo'lishi kerak."),
-      }),
-    )
-    .min(1, "Savatda kamida bitta mahsulot bo'lishi kerak."),
-  paymentType: z.enum(["NAQD", "KARTA", "BOSHQA"]),
+export const saleSchema = z
+  .object({
+    items: z
+      .array(
+        z.object({
+          productId: z.string().min(1),
+          miqdori: z.coerce.number().int().positive("Miqdor musbat son bo'lishi kerak."),
+        }),
+      )
+      .min(1, "Savatda kamida bitta mahsulot bo'lishi kerak."),
+    paymentType: z.enum(["NAQD", "KARTA", "QARZ", "BOSHQA"]),
+    mijozIsmi: z.string().optional().or(z.literal("")),
+    mijozTelefon: z.string().optional().or(z.literal("")),
+  })
+  .refine((data) => data.paymentType !== "QARZ" || !!data.mijozIsmi, {
+    message: "Nasiya (qarz) uchun mijoz ismini kiriting.",
+    path: ["mijozIsmi"],
+  });
+
+export const debtSchema = z.object({
+  mijozIsmi: z.string().min(1, "Mijoz ismini kiriting."),
+  mijozTelefon: z.string().optional().or(z.literal("")),
+  summa: z.coerce.number().positive("Summa musbat son bo'lishi kerak."),
+  izoh: z.string().optional().or(z.literal("")),
+  sana: z.string().optional().or(z.literal("")),
+});
+
+export const debtPaymentSchema = z.object({
+  toLovSumma: z.coerce.number().positive("To'lov summasi musbat son bo'lishi kerak."),
 });
 
 export const expenseSchema = z.object({

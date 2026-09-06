@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useStore } from "@/components/dashboard/StoreContext";
 import { apiFetch, ApiError } from "@/lib/api-client";
 import { useToast } from "@/components/ui/Toast";
+import Calculator from "@/components/pos/Calculator";
 
 interface Product {
   id: string;
@@ -30,7 +31,10 @@ export default function KassaPage() {
   const [mahsulotlar, setMahsulotlar] = useState<Product[]>([]);
   const [qidiruv, setQidiruv] = useState("");
   const [savat, setSavat] = useState<SavatItem[]>([]);
-  const [tolovTuri, setTolovTuri] = useState<"NAQD" | "KARTA" | "BOSHQA">("NAQD");
+  const [tolovTuri, setTolovTuri] = useState<"NAQD" | "KARTA" | "QARZ" | "BOSHQA">("NAQD");
+  const [mijozIsmi, setMijozIsmi] = useState("");
+  const [mijozTelefon, setMijozTelefon] = useState("");
+  const [kalkulyatorOchiq, setKalkulyatorOchiq] = useState(false);
   const [yuklanmoqda, setYuklanmoqda] = useState(true);
   const [yakunlanmoqda, setYakunlanmoqda] = useState(false);
 
@@ -38,7 +42,8 @@ export default function KassaPage() {
     if (!tanlanganDokon) return;
     let bekor = false;
     async function yuklash() {
-      if (!tanlanganDokon) return;
+          if (!tanlanganDokon) return;
+
       setYuklanmoqda(true);
       const data = await apiFetch<{ mahsulotlar: Product[] }>(`/api/stores/${tanlanganDokon.id}/products`);
       if (!bekor) setMahsulotlar(data.mahsulotlar);
@@ -92,6 +97,10 @@ export default function KassaPage() {
 
   async function sotuvniYakunlash() {
     if (!tanlanganDokon || savat.length === 0) return;
+    if (tolovTuri === "QARZ" && !mijozIsmi.trim()) {
+      ko_rsat("Nasiya (qarz) uchun mijoz ismini kiriting.", "error");
+      return;
+    }
     setYakunlanmoqda(true);
     try {
       await apiFetch(`/api/stores/${tanlanganDokon.id}/sales`, {
@@ -99,10 +108,17 @@ export default function KassaPage() {
         body: JSON.stringify({
           items: savat.map((i) => ({ productId: i.product.id, miqdori: i.miqdori })),
           paymentType: tolovTuri,
+          mijozIsmi: tolovTuri === "QARZ" ? mijozIsmi : undefined,
+          mijozTelefon: tolovTuri === "QARZ" ? mijozTelefon : undefined,
         }),
       });
-      ko_rsat("Sotuv muvaffaqiyatli yakunlandi!", "success");
+      ko_rsat(
+        tolovTuri === "QARZ" ? "Sotuv yakunlandi, qarz sifatida yozildi." : "Sotuv muvaffaqiyatli yakunlandi!",
+        "success",
+      );
       setSavat([]);
+      setMijozIsmi("");
+      setMijozTelefon("");
       const data = await apiFetch<{ mahsulotlar: Product[] }>(`/api/stores/${tanlanganDokon.id}/products`);
       setMahsulotlar(data.mahsulotlar);
     } catch (err) {
@@ -135,7 +151,7 @@ export default function KassaPage() {
                 key={p.id}
                 onClick={() => savatgaQoshish(p)}
                 disabled={p.miqdori <= 0}
-                className="card flex flex-col items-start gap-1 p-4 text-left transition hover:border-brand-400 disabled:cursor-not-allowed disabled:opacity-40"
+                className="card flex flex-col items-start gap-1 p-3 text-left transition hover:border-brand-400 disabled:cursor-not-allowed disabled:opacity-40 sm:p-4"
               >
                 <div className="line-clamp-2 text-sm font-medium">{p.nomi}</div>
                 <div className="text-xs text-slate-400">{p.category?.nomi || "Kategoriyasiz"}</div>
@@ -150,7 +166,7 @@ export default function KassaPage() {
         )}
       </div>
 
-      <div className="card flex h-fit flex-col p-5">
+      <div className="card flex h-fit flex-col p-4 sm:p-5">
         <h2 className="mb-4 font-semibold">Savat</h2>
         {savat.length === 0 ? (
           <p className="text-sm text-slate-400">Savat bo'sh. Mahsulot tanlang.</p>
@@ -187,21 +203,45 @@ export default function KassaPage() {
 
         <div className="my-4 border-t border-slate-200 pt-4 dark:border-slate-800">
           <label className="label">To'lov turi</label>
-          <div className="grid grid-cols-3 gap-2">
-            {(["NAQD", "KARTA", "BOSHQA"] as const).map((t) => (
+          <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+            {(["NAQD", "KARTA", "QARZ", "BOSHQA"] as const).map((t) => (
               <button
                 key={t}
                 onClick={() => setTolovTuri(t)}
-                className={`rounded-xl border px-3 py-2 text-sm font-medium ${
+                className={`rounded-xl border px-2 py-2 text-xs font-medium sm:text-sm ${
                   tolovTuri === t
                     ? "border-brand-600 bg-brand-50 text-brand-700"
                     : "border-slate-200 text-slate-600 dark:border-slate-700"
                 }`}
               >
-                {t === "NAQD" ? "Naqd pul" : t === "KARTA" ? "Bank karta" : "Boshqa"}
+                {t === "NAQD" ? "Naqd pul" : t === "KARTA" ? "Bank karta" : t === "QARZ" ? "Nasiya" : "Boshqa"}
               </button>
             ))}
           </div>
+
+          {tolovTuri === "QARZ" && (
+            <div className="mt-3 space-y-2 rounded-xl bg-amber-50 p-3 dark:bg-amber-950/40">
+              <div>
+                <label className="label !mb-1 !text-xs">Mijoz ismi</label>
+                <input
+                  className="input !py-2"
+                  value={mijozIsmi}
+                  onChange={(e) => setMijozIsmi(e.target.value)}
+                  placeholder="Masalan: Aziz aka"
+                  required
+                />
+              </div>
+              <div>
+                <label className="label !mb-1 !text-xs">Telefon raqami (ixtiyoriy)</label>
+                <input
+                  className="input !py-2"
+                  value={mijozTelefon}
+                  onChange={(e) => setMijozTelefon(e.target.value)}
+                  placeholder="+998901234567"
+                />
+              </div>
+            </div>
+          )}
         </div>
 
         <div className="mb-4 flex items-center justify-between text-lg font-bold">
@@ -217,6 +257,15 @@ export default function KassaPage() {
           {yakunlanmoqda ? "Yakunlanmoqda..." : "Sotuvni yakunlash"}
         </button>
       </div>
+
+      <button
+        onClick={() => setKalkulyatorOchiq(true)}
+        className="fixed bottom-5 right-5 z-40 flex h-14 w-14 items-center justify-center rounded-full bg-slate-900 text-white shadow-lg transition hover:bg-slate-800 dark:bg-brand-600 dark:hover:bg-brand-700"
+        aria-label="Kalkulyator"
+      >
+        <i className="ti ti-calculator text-2xl" aria-hidden="true" />
+      </button>
+      <Calculator ochiq={kalkulyatorOchiq} onYopish={() => setKalkulyatorOchiq(false)} />
     </div>
   );
 }

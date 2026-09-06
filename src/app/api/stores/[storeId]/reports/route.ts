@@ -35,7 +35,7 @@ export async function GET(req: NextRequest, { params }: { params: { storeId: str
     const sofFoyda = yalpiFoyda - umumiyXarajat;
 
     // To'lov turlari bo'yicha taqsimot (Naqd / Karta / Boshqa)
-    const tolovTurlariBoyicha: Record<string, number> = { NAQD: 0, KARTA: 0, BOSHQA: 0 };
+    const tolovTurlariBoyicha: Record<string, number> = { NAQD: 0, KARTA: 0, QARZ: 0, BOSHQA: 0 };
     for (const sale of sales) {
       for (const payment of sale.payments) {
         tolovTurlariBoyicha[payment.turi] = (tolovTurlariBoyicha[payment.turi] || 0) + Number(payment.summa);
