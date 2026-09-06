@@ -1,7 +1,9 @@
+export const dynamic = 'force-dynamic';
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { requireSuperAdmin } from "@/lib/session";
 import { handleError } from "@/lib/api-helpers";
+
 
 export async function GET() {
   try {

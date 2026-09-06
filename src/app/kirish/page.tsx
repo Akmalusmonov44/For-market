@@ -1,12 +1,12 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { apiFetch, ApiError } from "@/lib/api-client";
 import { useLanguage } from "@/components/i18n/LanguageContext";
 
-export default function KirishPage() {
+function KirishForm() {
   const { t } = useLanguage();
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -17,10 +17,7 @@ export default function KirishPage() {
 
   // Agar foydalanuvchi allaqachon (haqiqiy, tasdiqlangan) sessiyaga ega
   // bo'lsa, uni qayta login qildirmasdan to'g'ridan-to'g'ri ichkariga
-  // yuboramiz. Bu tekshiruv haqiqiy /api/auth/me chaqiruvi orqali amalga
-  // oshadi (middleware'dagi kabi shunchaki cookie borligiga qarab emas),
-  // shuning uchun eskirgan/yaroqsiz cookie hech qachon cheksiz
-  // yo'naltirishga olib kelmaydi.
+  // yuboramiz.
   useEffect(() => {
     (async () => {
       try {
@@ -105,5 +102,13 @@ export default function KirishPage() {
         </p>
       </div>
     </main>
+  );
+}
+
+export default function KirishPage() {
+  return (
+    <Suspense fallback={<div className="flex min-h-screen items-center justify-center">Yuklanmoqda...</div>}>
+      <KirishForm />
+    </Suspense>
   );
 }
