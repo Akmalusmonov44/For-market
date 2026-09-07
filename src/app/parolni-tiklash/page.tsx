@@ -4,8 +4,9 @@ import { useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { apiFetch, ApiError } from "@/lib/api-client";
+import LanguageSwitcher from "@/components/i18n/LanguageSwitcher";
 
-function ParolniTiklashForm() {
+function ParolniTiklashContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const token = searchParams.get("token") || "";
@@ -37,6 +38,7 @@ function ParolniTiklashForm() {
   if (!token) {
     return (
       <main className="flex min-h-screen items-center justify-center bg-slate-50 px-4 py-10">
+        <LanguageSwitcher fixed />
         <div className="card w-full max-w-md p-8 text-center">
           <h1 className="text-xl font-bold">Havola yaroqsiz</h1>
           <p className="mt-2 text-sm text-slate-500">
@@ -52,6 +54,7 @@ function ParolniTiklashForm() {
 
   return (
     <main className="flex min-h-screen items-center justify-center bg-slate-50 px-4 py-10">
+      <LanguageSwitcher fixed />
       <div className="card w-full max-w-md p-8">
         <h1 className="text-2xl font-bold">Yangi parol o'rnatish</h1>
 
@@ -105,7 +108,7 @@ export default function ParolniTiklashPage() {
         </main>
       }
     >
-      <ParolniTiklashForm />
+      <ParolniTiklashContent />
     </Suspense>
   );
 }

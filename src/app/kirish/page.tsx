@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { apiFetch, ApiError } from "@/lib/api-client";
 import { useLanguage } from "@/components/i18n/LanguageContext";
+import LanguageSwitcher from "@/components/i18n/LanguageSwitcher";
 
 function KirishForm() {
   const { t } = useLanguage();
@@ -55,6 +56,7 @@ function KirishForm() {
 
   return (
     <main className="flex min-h-screen items-center justify-center bg-slate-50 px-4 py-10">
+      <LanguageSwitcher fixed />
       <div className="card w-full max-w-md p-8">
         <h1 className="text-2xl font-bold">{t("auth.kirishSarlavha")}</h1>
         <p className="mt-1 text-sm text-slate-500">{t("auth.kirishTavsif")}</p>

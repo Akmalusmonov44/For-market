@@ -1,7 +1,11 @@
 "use client";
 
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useLanguage } from "@/components/i18n/LanguageContext";
+import { apiFetch } from "@/lib/api-client";
+import LanguageSwitcher from "@/components/i18n/LanguageSwitcher";
 
 const IMKONIYATLAR = [
   { sarlavha: "Kassa / POS", tavsif: "Shtrix-kod orqali tezkor sotuv, savat va bir necha to'lov turi." },
@@ -26,6 +30,30 @@ const SAVOLLAR = [
 
 export default function LandingPage() {
   const { t } = useLanguage();
+  const router = useRouter();
+  const [tekshirilmoqda, setTekshirilmoqda] = useState(true);
+
+  // Agar foydalanuvchi allaqachon tizimga kirgan bo'lsa, marketing sahifasini
+  // ko'rsatib o'tirmasdan to'g'ridan-to'g'ri o'z do'kon paneliga yuboramiz.
+  useEffect(() => {
+    (async () => {
+      try {
+        const data = await apiFetch<{ foydalanuvchi: { isSuperAdmin?: boolean } | null }>("/api/auth/me");
+        if (data.foydalanuvchi) {
+          router.replace(data.foydalanuvchi.isSuperAdmin ? "/admin" : "/dashboard");
+          return;
+        }
+      } catch {
+        // e'tiborsiz — oddiy landing page ko'rsatiladi
+      }
+      setTekshirilmoqda(false);
+    })();
+  }, [router]);
+
+  if (tekshirilmoqda) {
+    return <div className="flex min-h-screen items-center justify-center text-slate-400">Yuklanmoqda...</div>;
+  }
+
   return (
     <main className="min-h-screen bg-gradient-to-b from-white to-slate-50">
       <header className="mx-auto flex max-w-6xl items-center justify-between px-6 py-6">
@@ -36,9 +64,10 @@ export default function LandingPage() {
           <a href="#narxlar">{t("landing.narxlar")}</a>
           <a href="#savol-javob">{t("landing.savolJavob")}</a>
         </nav>
-        <div className="flex gap-3">
-          <Link href="/kirish" className="btn-secondary">{t("landing.kirish")}</Link>
-          <Link href="/royxatdan-otish" className="btn-primary">{t("landing.dokonOchish")}</Link>
+        <div className="flex items-center gap-2 sm:gap-3">
+          <LanguageSwitcher />
+          <Link href="/kirish" className="btn-secondary !px-3 text-sm sm:!px-4 sm:text-base">{t("landing.kirish")}</Link>
+          <Link href="/royxatdan-otish" className="btn-primary !px-3 text-sm sm:!px-4 sm:text-base">{t("landing.dokonOchish")}</Link>
         </div>
       </header>
 

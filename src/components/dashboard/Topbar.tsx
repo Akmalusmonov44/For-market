@@ -6,6 +6,7 @@ import { useStore } from "./StoreContext";
 import StoreSelector from "./StoreSelector";
 import { apiFetch } from "@/lib/api-client";
 import { useLanguage } from "@/components/i18n/LanguageContext";
+import LanguageSwitcher from "@/components/i18n/LanguageSwitcher";
 
 export default function Topbar({ onMenyu }: { onMenyu: () => void }) {
   const { foydalanuvchi } = useStore();
@@ -25,7 +26,8 @@ export default function Topbar({ onMenyu }: { onMenyu: () => void }) {
       <div className="hidden text-sm text-slate-500 md:block">
         {foydalanuvchi ? `${t("topbar.xushKelibsiz")}, ${foydalanuvchi.ism}` : ""}
       </div>
-      <div className="flex items-center gap-2 pr-16 sm:gap-3 sm:pr-20 md:pr-24">
+      <div className="flex items-center gap-2 sm:gap-3">
+        <LanguageSwitcher />
         {foydalanuvchi?.isSuperAdmin && (
           <Link
             href="/admin"

@@ -25,7 +25,7 @@ export default function StoreSelector() {
         onClick={() => setOchiq((v) => !v)}
         className="flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-medium hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-900"
       >
-        <span className="max-w-[140px] truncate">{tanlanganDokon.nomi}</span>
+        <span className="max-w-[90px] truncate sm:max-w-[140px]">{tanlanganDokon.nomi}</span>
         <span className="text-slate-400">▼</span>
       </button>
       {ochiq && (

@@ -5,6 +5,7 @@ import { useRouter, usePathname } from "next/navigation";
 import Link from "next/link";
 import { apiFetch } from "@/lib/api-client";
 import { useLanguage } from "@/components/i18n/LanguageContext";
+import LanguageSwitcher from "@/components/i18n/LanguageSwitcher";
 
 interface FoydalanuvchiInfo {
   id: string;
@@ -47,8 +48,9 @@ function AdminInner({ children }: { children: React.ReactNode }) {
   return (
     <div className="flex min-h-screen">
       <aside className="w-64 shrink-0 border-r border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900">
-        <div className="flex h-16 items-center px-6 text-lg font-bold text-brand-700">
-          {t("admin.sarlavha")}
+        <div className="flex h-16 items-center justify-between px-4 text-base font-bold text-brand-700">
+          <span className="truncate">{t("admin.sarlavha")}</span>
+          <LanguageSwitcher />
         </div>
         <nav className="space-y-1 px-3">
           {MENYU.map((item) => {
